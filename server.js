@@ -1,25 +1,11 @@
-const WebSocket = require("ws")
-const path = require('path');
-const fs = require('fs');
+const WebSocket = require("ws");
 const { v4: uuidv4 } = require('uuid');
+const http =  require('http');
 
-const cfg = {
-  ssl: false,
-  port: 8080,
-  ssl_key: 'ssl/cert.key',
-  ssl_cert: 'ssl/cert.crt'
-};
-
-const httpServ = (cfg.ssl) ? require('https') : require('http');
-let server = null;
-if (cfg.ssl) {
-  server = httpServ.createServer({
-      key: fs.readFileSync(path.join(__dirname,cfg.ssl_key)),
-      cert: fs.readFileSync(path.join(__dirname,cfg.ssl_cert))
-  });
-} else {
-  server = httpServ.createServer();
-}
+server = http.createServer((req, res) => {
+  res.writeHead(200, { 'Content-Type': 'text/plain' });
+  res.end('WebSocket server boot success!\n');
+});
 // 创建 WebSocket 服务器
 const wss = new WebSocket.Server({ server });
 // 房间连接名单
@@ -139,7 +125,7 @@ function generateRandomNumberString(length, arr) {
   }
   return result;
 }
-// 启动HTTPS服务器并监听指定端口
-server.listen(cfg.port,"0.0.0.0", () => {
-  console.log(`WebSocket服务器已启动，监听端口${cfg.port}`);
+// 启动 HTTP 服务器监听端口
+server.listen(3000, () => {
+  console.log(`Server is listening on port ${PORT}`);
 });
