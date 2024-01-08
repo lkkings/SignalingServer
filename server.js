@@ -40,12 +40,14 @@ wss.on('connection', (socket)=>{
               break;
           case 'join':
               if (rooms[room]) {
+                  const users =  Object.keys(rooms[room]); 
+                  //第一次加入发送当前用户id和所有连接用户
+                  sendTo(socket,JSON.stringify({type: 'joined',users,newUser:user,first:true}));
+                  //后续有新用户加入
+                  sendToRoom(room,JSON.stringify({ type: 'joined', newUser:user,first:false})); 
                   //加入房间
                   rooms[room][user] = socket;
-                  userRoomMap[user] = room;
-                  //这里先做简单点的处理，单有新用户加入时直接返回当前房间所有用户
-                  const users =  Object.keys(rooms[room]); 
-                  sendToRoom(room,JSON.stringify({ type: 'joined', users, user}));    
+                  userRoomMap[user] = room;   
               } else {
                   //房间不存在
                   sendTo(socket,JSON.stringify({ type: 'error', message: 'Room not found!' }))
@@ -89,7 +91,7 @@ wss.on('connection', (socket)=>{
       console.log('Disconnecting from ', user);
       const room = userRoomMap[user];
       if(!room){
-        console.log("Not join room user left!");
+        console.log("free user left!");
         return;
       }
       console.log(`user: ${user} left from room: ${room}`);
@@ -127,5 +129,5 @@ function generateRandomNumberString(length, arr) {
 }
 // 启动 HTTP 服务器监听端口
 server.listen(3000, () => {
-  console.log(`Server is listening on port ${PORT}`);
+  console.log(`Server is listening on port 3000`);
 });
