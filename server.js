@@ -40,6 +40,13 @@ wss.on('connection', (socket)=>{
                 admins[userId] = socket;
                 sendTo(socket,JSON.stringify({ type: 'created', room: roomId}))
                 break;
+            case 'visit':
+              if (rooms[room]){
+                sendTo(socket,JSON.stringify({type: 'visited'}));
+              }else{
+                sendTo(socket,JSON.stringify({ type: 'error', message: 'Room not found!' }))
+              }
+              break;
             case 'join':
                 if (rooms[room]) {
                     //判断在此之前用户是否创建了房间,如果创建了房间但是进入另一个房间，则销毁原来的房间再进入
